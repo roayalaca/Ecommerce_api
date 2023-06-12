@@ -1,16 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const apiRoutes = require("./routes");
-const errorRoutes = require("./routes/errors.routes");
+const userRoutes = require("./routes/users.routes")
+const productRoutes = require("./routes/products.routes");
+const orderRoutes = require("./routes/orders.routes")
 const initModels = require("./models/initModels");
 const db = require("./utils/database");
+const apiRoutes = require("./routes/index")
+
 
 initModels();
 
 db.sync();
 
-const app = express();
+const app = express(); 
 
 app.use(cors());
 app.use(express.json());
@@ -23,7 +26,7 @@ app.get("/", (req, res) => {
 
 // agrupar todas las rutas en un archivo
 apiRoutes(app);
-errorRoutes(app);
+
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en el puerto ${PORT}`);

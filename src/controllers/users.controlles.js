@@ -1,31 +1,26 @@
 const Users = require("../models/users.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { sendWelcomeMail } = require("../utils/sendMails");
 require("dotenv").config();
+const transporter = require("../utils/mailer");
 
 const createUser = async (req, res, next) => {
   try {
-    // no importa que tan largo sea el nombre de tu funcion o variable
-    // siempre y cuando explique lo que hace
-    const { username, email, password } = req.body;
+  
+    const { username, email, password, avatar } = req.body;
     const hashed = await bcrypt.hash(password, 10);
 
-    await Users.create({ username, email, password: hashed });
-    // de aqui para abajo no se ejecuta si create User tiene un error
+    await Users.create({ username, email, password: hashed, avatar });
     res.status(201).send();
+    transporter .sendMail({
+      from: "alanayaca@gmail.com",
+      to: email,
+      subject: "Confirmación creación de cuenta",
+      text: `Buen día ${username}. Gracias por registrarse, este es un mensaje de confirmación.`,
+    })
+    .then(() => console.log("mensaje enviado"))
+    .catch((error) => console.log(error));
 
-    // necesitamos mandar un token para identificar esta acción
-    const verifyToken = jwt.sign(
-      { username, email },
-      process.env.JWT_SECRET_EMAIL_VALIDATION,
-      {
-        algorithm: "HS512",
-        expiresIn: "12h",
-      }
-    );
-
-    sendWelcomeMail(email, { username, verifyToken });
   } catch (error) {
     next(error);
   }
@@ -34,6 +29,7 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+    console.log(req.body)
     const user = await Users.findOne({
       where: { email },
     });
@@ -46,15 +42,9 @@ const login = async (req, res, next) => {
       });
     }
 
-    if (!user.validUser) {
-      return next({
-        status: 400,
-        name: "email is not verified",
-        message: "User needs verified his/her email",
-      });
-    }
+    console.log(user)
 
-    // comparar las contraseñas
+    
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
@@ -64,7 +54,6 @@ const login = async (req, res, next) => {
         message: "The password does not match with user email",
       });
     }
-    const { firstname, lastname, id, username, rolId } = user;
 
     // no responder la contraseña
 
@@ -72,9 +61,9 @@ const login = async (req, res, next) => {
     // pueda acceder a los recursos del back
 
     // Genear token
-    const userData = { firstname, lastname, id, username, email, rolId };
+    const userData = { username: user.username, email, avatar: user.avatar };
 
-    const token = jwt.sign(userData, process.env.JWT_SECRET_LOGIN, {
+    const token = jwt.sign(userData, "parangaricutirimicuaro", {
       algorithm: "HS512",
       expiresIn: "5m",
     });
@@ -87,11 +76,27 @@ const login = async (req, res, next) => {
   }
 };
 
+const updateUser = async (req, res, next) => {
+  try {
+
+    const {id} = req.params;
+    const { username, avatar } = req.body;
+    await Users.update({ username, avatar }, {
+      where: {id}
+    });
+
+    res.status(204).send()
+    
+  } catch (error) {
+    next(error);
+  }
+}
+
 const validateEmail = async (req, res, next) => {
   try {
     const { token } = req.body;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_EMAIL_VALIDATION, {
+    const decoded = jwt.verify(token, "parangaricutirimicuaro", {
       algorithms: "HS512",
     });
     // decoded = {email, username}
@@ -121,6 +126,5 @@ module.exports = {
   createUser,
   login,
   validateEmail,
+  updateUser
 };
-
-// alguien esta editando

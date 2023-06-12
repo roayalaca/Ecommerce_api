@@ -4,16 +4,10 @@ const { DataTypes } = require("sequelize");
 const Users = db.define(
   "users",
   {
-    id: {
-      type: DataTypes.INTEGER,
+    id: { 
+      type: DataTypes.INTEGER, 
       autoIncrement: true,
       primaryKey: true,
-    },
-    firstname: {
-      type: DataTypes.STRING(30),
-    },
-    lastname: {
-      type: DataTypes.STRING(30),
     },
     username: {
       type: DataTypes.STRING(30),
@@ -28,20 +22,14 @@ const Users = db.define(
         isEmail: true,
       },
     },
-    rolId: {
-      type: DataTypes.INTEGER,
-      field: "rol_id",
-      defaultValue: 1,
-      allowNull: false,
-    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    validUser: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      field: "valid_user",
+    avatar: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      isUrl: true
     },
   },
   {

@@ -26,9 +26,9 @@ const createUserValidator = [
   check("password", "Error con el password")
     .exists()
     .withMessage("password es obligatorio")
-    .notEmpty()
+    .notEmpty()  
     .withMessage("password no puede estar vacio")
-    .isString()
+    .isString() 
     .withMessage("El password debe ser un string")
     .isLength({ min: 8 })
     .withMessage("El password debe tener minimo 8 caracteres"),
@@ -49,5 +49,25 @@ const loginUserValidator = [
   validateResult,
 ];
 
+const updateUserUserValidator = [
+  check("username", "Error con el campo username")
+    .exists()
+    .withMessage("Username es obligatorio")
+    .notEmpty()
+    .withMessage("Username no debe estar vacio")
+    .isString()
+    .withMessage("El tipo de dato debe ser string")
+    .isLength({ min: 6, max: 30 })
+    .withMessage("El username debe tener minimo 6 caracteres y máximo 30"),
+  check("avatar", "Error con el campo avatar")
+    .exists()
+    .withMessage("email es obligatorio")
+    .notEmpty()
+    .withMessage("email no puede estar vacio")
+    .isString()
+    .withMessage("email debe ser un string"),
+  validateResult,
+];
+
 // object.hasOwnProperty('propertyName')
-module.exports = { createUserValidator, loginUserValidator };
+module.exports = { createUserValidator, loginUserValidator, updateUserUserValidator };
