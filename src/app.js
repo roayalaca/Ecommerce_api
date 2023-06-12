@@ -7,6 +7,7 @@ const orderRoutes = require("./routes/orders.routes")
 const initModels = require("./models/initModels");
 const db = require("./utils/database");
 const apiRoutes = require("./routes/index")
+const cors = require("cors")
 
 
 initModels();
