@@ -1,13 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
-const userRoutes = require("./routes/users.routes")
-const productRoutes = require("./routes/products.routes");
-const orderRoutes = require("./routes/orders.routes")
 const initModels = require("./models/initModels");
 const db = require("./utils/database");
 const apiRoutes = require("./routes/index")
-const cors = require("cors")
 
 
 initModels();
